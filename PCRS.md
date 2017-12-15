@@ -9,14 +9,14 @@ not worry too terribly much about the footprint of our file.
 The use of language in this specification is deliberate: we adhere to the
 RFC2119 provisions in regards to language. To sum up:
 
-MUST/-NOT | SHALL/-NOT indicate binding requirements in order to be
+`MUST/-NOT | SHALL/-NOT` indicate binding requirements in order to be
 considered a "standards compliant" implementation.
 
-SHOULD/-NOT | RECCOMENDED indictate requirements that are expected to
+`SHOULD/-NOT | RECOMMENDED` indictate requirements that are expected to
 be present, but are allowed to be ignored if the cause is great enough.
 Beware - many of these features may be tacitly expected.
 
-MAY | OPTIONAL indicate suggestions for behaviour that may be
+`MAY | OPTIONAL` indicate suggestions for behaviour that may be
 benefical to the task at hand, but are not imperative. Note that
 these are not necessarily expected, but can be thought of as a
 "wishlist" of possible additions to a more-fully featured implementation.
@@ -25,9 +25,10 @@ these are not necessarily expected, but can be thought of as a
 
 ### 2.1 Basic PCRS file
 
-The maximum grid size is 255x255 - 0xFFx0xFF. This is a hard limit - no
-board can be bigger than this, and any board trying to declare a multi-
-byte size will trip up the parser and recieve an error.
+The maximum size of a single default PCRS "board" is 255x255 - 
+one byte per axis. This is a hard limit, and a compiler/parser
+**MUST NOT** implement bigger blocks within the default framework - use
+an extension.
 
 The first four bytes of a PCRS file are the magic number - appropriately
 "PCRS". This is followed by the block index, which is layed out like so:
@@ -109,4 +110,22 @@ As an example, a board that would appear as the following to the end-user,
 for all intents and purposes.
 
 
+## 3. Extensions
 
+An attempt has been made to slowly but surely cover most traditional use-cases
+for a format like this, including realsitic, non-obtrusive constraints that
+allow for flexibility while also giving reasonable performance. However, it
+will inevitably come about that the framework set up here doesn't cover
+an intended use-case.
+
+Therefore, a framework by which compiler/parser specific extensions can be
+defined and articulated seems at least partially necessary.
+
+_**WIP** - This will be fairly barebones, as this is simply just advice and
+guidelines for how to write "extensions" into this specification._
+
+Notes:
+
+* Reserve block IDs 00-1F as libpcrss-only
+* Mark 20-7F as unallocated space.
+* Reserve 80-FF as "extension space."
