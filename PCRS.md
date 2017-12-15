@@ -1,12 +1,10 @@
-.PCRS file - a mini-specification
-====================================
+# .PCRS file - a mini-specification
 
 PCRS files are pretty simple. As we're tracking picross (and not something
 more complex), we can store a bunch of information in discrete chunks, and
 not worry too terribly much about the footprint of our file.
 
-1. Language in this specification
-------------------------------------------
+## 1. Language in this specification
 
 The use of language in this specification is deliberate: we adhere to the
 RFC2119 provisions in regards to language. To sum up:
@@ -23,8 +21,7 @@ benefical to the task at hand, but are not imperative. Note that
 these are not necessarily expected, but can be thought of as a
 "wishlist" of possible additions to a more-fully featured implementation.
 
-2. Technical Information
--------------------------
+## 2. Technical Information
 
 ### 2.1 Basic PCRS file
 
