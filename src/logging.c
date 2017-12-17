@@ -18,8 +18,40 @@
 #include "logging.h"
 #include <stdio.h>
 
-void _PCRS_error(const char* msg) {
-	fprintf("libcrss: ", stderr);
-	fprintf(msg, stderr);	
-	fprintf("\n", stderr);
+enum _PCRS_loglevel {
+	TRACE,
+	DEBUG,
+	INFO,
+	WARNING,
+	ERROR,
+	FATAL
+};
+
+const char* _PCRS_levelStrings[] = {
+	"TRACE",
+	"DEBUG",
+	"INFO",
+	"WARNING",
+	"ERROR",
+	"FATAL"
+};
+
+static void _PCRS_log(enum _PCRS_loglevel logLevel, 
+					  const char* msg, 
+					  FILE* file) {
+#ifndef PCRS_STOP_LOGGING
+	fprintf(file, "libpcrss: [");
+	fprintf(file, _PCRS_levelStrings[logLevel]);
+	fprintf(file, "] ");
+	fprintf(file, msg) ;
+#endif
 }
+
+void _PCRS_info(const char* msg) {
+	_PCRS_log(INFO, msg, stdout);
+}
+
+void _PCRS_error(const char* msg) {
+	_PCRS_log(ERROR, msg, stderr);
+}	
+

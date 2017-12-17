@@ -26,12 +26,22 @@
 
 static bool _PCRS_readToBuffer(uint8_t* buff, size_t num, FILE* file);
 
+/**
+ * PCRS_load
+ *
+ * Handles loading from a filename, and encapsulates the necessary
+ * logic used to open a FILE* for reading, and passes information to
+ * PCRS_parse if the FILE* is able to be opened.
+ *
+ * Returns the result of PCRS_parse() on the file if successful,
+ * returning NULL if the file is unable to be loaded.
+ */
 struct PCRS_file* PCRS_load(char* filename) {
 	FILE* tmp = fopen(filename, "rb");
 	if(tmp == NULL) {
 		int err = errno;
-		char buff[MAX_LOG_SIZE];
-		snprintf(buff, MAX_LOG_SIZE, "unable to load file %s", filename);
+		char buff[PCRS_MAX_LOG_SIZE];
+		snprintf(buff, PCRS_MAX_LOG_SIZE, "unable to load file %s", filename);
 		_PCRS_error(buff);
 		return NULL;
 	}		
@@ -39,8 +49,17 @@ struct PCRS_file* PCRS_load(char* filename) {
 	return PCRS_parse(tmp);
 }
 
+/**
+ * PCRS_prase
+ *
+ * Parses a FILE* and attempts to convert its data
+ * into a PCRS_file structure.
+ *
+ * Returns a pointer to the new struct upon success,
+ * and NULL on failure.
+ */
 struct PCRS_file* PCRS_parse(FILE* file) {
-	PCRS_file* fin = NULL;
+	struct PCRS_file* fin = NULL;
 
 	if(file == NULL) {
 		_PCRS_error("PCRS_parse recieved null file pointer");
@@ -56,7 +75,7 @@ struct PCRS_file* PCRS_parse(FILE* file) {
 		return NULL;
 	}
 
-	fin = (PCRS_file*)malloc(sizeof(PCRS_file));
+	fin = (struct PCRS_file*)malloc(sizeof(struct PCRS_file));
 
 	uint8_t bcBuff[2];
 
@@ -66,7 +85,9 @@ struct PCRS_file* PCRS_parse(FILE* file) {
 	}	
 
 	// Our parser has to work with the possibility that there's NULL
-	// blocks about.
+	// blocks about. Therefore, we'll use this count as guide as to
+	// the _stated_ block count, not the actual count, which is
+	// calculated in the loop below.
 	uint16_t statedBlockCount = (bcBuff[0] + (bcBuff[1] << 8));
 
 	uint8_t dirBuff[5]; // 1 byte for ID, 4 for offset
@@ -74,7 +95,7 @@ struct PCRS_file* PCRS_parse(FILE* file) {
 	uint8_t blockType;
 	uint32_t blockOffset;
 
-	for(uint16_t i =0;i < fin->statedBlockCount;i++) {
+	for(uint16_t i =0;i < statedBlockCount;i++) {
 		if(!_PCRS_readToBuffer(dirBuff, 5, file)) {
 			PCRS_destroy(fin);
 			return NULL;
@@ -89,17 +110,32 @@ struct PCRS_file* PCRS_parse(FILE* file) {
 	return fin;
 }
 
-
+/**
+ * _PCRS_readToBuffer
+ *
+ * Internal function, reads an arbitrary number of bytes, num, into a buffer,
+ * buff, supplied from a FILE*, file.
+ * 
+ * Returns a boolean indicating whether or not the read was successful
+ */
 bool _PCRS_readToBuffer(uint8_t* buff, size_t num, FILE* file) {
 	if(fread(buff, 1, 2, file) != 2) {
+
+		// If an fread() call fails, there's two possibilities:
+
+		// a) We've reached the end of the file
 		if(feof(file)) {
 			_PCRS_error("pcrs file ended early");
 			return false;
 		}
+
+		// b) We've encountered an error
 		else if(ferror(file)) {
 			_PCRS_error("PCRS_parse encountered an error reading the file");
 			return false;
 		}
+
+		// If we're here, something weird is going on and we should abort.
 		else {
 			_PCRS_error("fatal: edge case, neither eof nor error"
 						"but short read");
@@ -110,6 +146,13 @@ bool _PCRS_readToBuffer(uint8_t* buff, size_t num, FILE* file) {
 	return true;
 }
 
+/**
+ * PCRS_destroy
+ *
+ * Destructor, makes sure to clear all reserved memory in a PCRS_file
+ * structure. Since a PCRS_file structure is made up of a lot of pieces,
+ * each piece is recursively checked and destructed if necessary.
+ */
 void PCRS_destroy(struct PCRS_file* file) {
 	if(file == NULL)
 		return;

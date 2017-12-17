@@ -24,6 +24,9 @@
 #include <stdint.h>
 #include "stddefs.h"
 
+// TODO - Decide where the type specifier will be - beginning of the block
+// or in the directory
+
 enum PCRS_blocktype {
 	NUL = 0x00, // NULL block
 	DAT = 0x01, // DATA block
@@ -32,11 +35,25 @@ enum PCRS_blocktype {
 	GRP = 0x04, // GRUP BLOCk
 };
 
+/**
+ * PCRS_DATA
+ *
+ * Stores the data encapsulated by a DATA block, which includes the vertical
+ * and horizontal size of the board specified by the block, along with the
+ * fully decompressed grid of values for the board.
+ */
 struct PCRS_DATA {
 	uint8_t sizeX, sizeY;
 	bool* grid;
 };
 
+/**
+ * PCRS_direntry
+ *
+ * Represents a single entry in the PCRS directory, specifying the type of
+ * block pointed to, along with an offset value to the location of the block's
+ * first byte.
+ */
 struct PCRS_direntry {
 	enum PCRS_blocktype blockType;
 	uint32_t offset;

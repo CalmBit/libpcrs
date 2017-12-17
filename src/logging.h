@@ -18,8 +18,10 @@
 #ifndef LIBPCRS_LOGGING_H
 #define LIBPRCS_LOGGING_H
 
-#define MAX_LOG_SIZE 4608
+#define PCRS_MAX_LOG_SIZE 4608
+// #define PCRS_STOP_LOGGING /* uncomment if you don't want libpcrs to log */
 
+extern void _PCRS_info(const char*);
 extern void _PCRS_error(const char*);
 
 #endif

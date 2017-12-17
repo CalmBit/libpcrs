@@ -18,10 +18,10 @@
 #ifndef LIBPCRS_STDDEFS_H
 #define LIBPCRS_STDDEFS_H
 
-#define LIBPCRS
-#define LIBPCRS_VERSION "0.1.0"
-#define LIBPCRS_NAME "libpcrs"
-#define LIBPCRS_MAGIC "PCRS"
-#define LIBPCRS_MGCNM_SIZE 5
+#define PCRS
+#define PCRS_VERSION "0.1.0"
+#define PCRS_NAME "libpcrs"
+#define PCRS_MAGIC "PCRS"
+#define PCRS_MGCNM_SIZE 5
 
 #endif
