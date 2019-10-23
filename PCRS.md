@@ -1,3 +1,6 @@
+# ARCHIVED
+The below is archived. Please do not use this or expect changes, as it will not be edited going forward.
+------
 # <a name="top"></a>PCRS - a mini-specification
 
 PCRS files are pretty simple. As we're tracking picross (and not something
